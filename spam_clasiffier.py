@@ -1,13 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
+
 
 # Multinomial Bayes algorithm for spam filter for SMS messasges (data set obatiend from: https://archive.ics.uci.edu/ml/datasets/sms+spam+collection
-
-# In[1]:
 
 
 import pandas as pd 
 import numpy as np 
+import re
 
 raw_SMS_data = pd.read_csv('SMSSpamCollection', sep='\t', header=None, names=['Label', 'SMS'])
 
@@ -20,10 +18,6 @@ print(raw_SMS_data['Label'].value_counts())
 # sampling the entire data set to genenrate training and validation data 
 # sets 
 
-# In[2]:
-
-
-
 rand_SMS_data = raw_SMS_data.sample(frac=1, random_state=1)
 training_SMS_data = rand_SMS_data.iloc[0:4458,:].reset_index(drop=True)
 validation_SMS_data = rand_SMS_data.iloc[4458:,:].reset_index(drop=True)
@@ -31,20 +25,12 @@ validation_SMS_data = rand_SMS_data.iloc[4458:,:].reset_index(drop=True)
 print(training_SMS_data['Label'].value_counts(normalize = True))
 print(validation_SMS_data['Label'].value_counts(normalize = True))
 
-
-# In[3]:
-
-
 # Performing some data cleaning to get the SMS data in a format 
 # that we can compute the probabilities of spam 
 
 training_SMS_data['SMS'] = training_SMS_data['SMS'].str.replace('\W', ' ')
 training_SMS_data['SMS'] = training_SMS_data['SMS'].str.lower()
 training_SMS_data.head()
-
-
-# In[4]:
-
 
 training_SMS_data['SMS'] = training_SMS_data['SMS'].str.split()
 vocabulary = [] 
@@ -55,9 +41,6 @@ for sms_iter in training_SMS_data['SMS']:
         
 vocabulary = list(set(vocabulary))
 print(len(vocabulary))
-
-
-# In[5]:
 
 
 word_counts_per_sms = {} 
@@ -97,9 +80,6 @@ alpha = 1
 print(spam_traning_sms.head())
 
 
-# In[19]:
-
-
 param_w_spam  = {word: 0 for word in vocabulary} 
 param_w_ham = {word: 0 for word in vocabulary} 
 
@@ -113,11 +93,6 @@ for word in vocabulary:
     param_w_ham[word] = p_w_given_ham
     if p_w_given_ham > 0: 
 
-
-# In[18]:
-
-
-import re
 
 def classify(message):
 
@@ -134,8 +109,7 @@ def classify(message):
         
         if word in param_w_ham: 
             p_ham_given_message *= param_w_ham[word]
-            
-    
+              
 
     print('P(Spam|message):', p_spam_given_message)
     print('P(Ham|message):', p_ham_given_message)
@@ -152,22 +126,11 @@ def classify(message):
 classify('WINNER!! This is the secret code to unlock the money: C3421.')
 classify("Sounds good, Tom, then see u there")  
     
-    
-    
-    
-    
-    
-    
-
-
-# In[27]:
-
-
 
 def classify_test_set(message):    
-    '''
-    message: a string
-    '''
+#     '''
+#     message: a string
+#     '''
     
     message = re.sub('\W', ' ', message)
     message = message.lower().split()
@@ -188,11 +151,6 @@ def classify_test_set(message):
         return 'spam'
     else:
         return 'needs human classification'
-
-
-
-
-# In[28]:
 
 
 correct = 0 
