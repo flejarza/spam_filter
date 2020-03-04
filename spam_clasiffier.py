@@ -91,8 +91,6 @@ for word in vocabulary:
     n_w_given_ham = ham_traning_sms[word].sum()
     p_w_given_ham = (n_w_given_ham + alpha) / (n_ham + alpha*n_vocabulary)
     param_w_ham[word] = p_w_given_ham
-    if p_w_given_ham > 0: 
-
 
 def classify(message):
 
